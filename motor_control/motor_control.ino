@@ -1,12 +1,12 @@
 // connect motor controller pins to Arduino digital pins
 // motor one
-int enA = 2;
-int in1 = 51;
-int in2 = 50;
+int enA = 9;
+int in1 = 34;
+int in2 = 35;
 // motor two
-int enB = 3;
-int in3 = 42;
-int in4 = 43;
+int enB = 10;
+int in3 = 36;
+int in4 = 37;
 void setup()
 {
   // set all the motor control pins to outputs
