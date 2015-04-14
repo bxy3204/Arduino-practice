@@ -12,11 +12,14 @@ int height;
 int width;
 int color;
 uint16_t j;
-Encoder motorL(20, 21);
-Encoder motorR(2, 3);
+Encoder motorLEnc(18,19);
+Encoder motorREnc(20,21);
+long leftEnc;
+long rightEnc;
 int camFlag = 0;
 int flag1 =0;
-
+int leftSpeed = 80;
+int rightSpeed = 80;
 
 uint16_t blocks; //holds number of objects found
 
@@ -35,6 +38,7 @@ int motorLeft = 5; //motor speed. pwm 60-254
 // motor two
 int Dir2 = 27;
 int motorRight = 6;
+int driveFlag=0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -51,10 +55,14 @@ void setup() {
 
 void loop() {
   readPixy();
-  
-  //camPos();
+  camPos();
   
   drive(fish);
+  Serial.println("Yloc:");
+  Serial.println(yLoc);
+    Serial.println("xloc:");
+  Serial.println(xLoc);
+  //Serial.println(rightEnc);
 }
 /*readPixy function"
   Check camera for objects, if nothing found
@@ -90,11 +98,13 @@ void readPixy()
    width = pixy.blocks[0].width;
    height = pixy.blocks[0].height;
    color = pixy.blocks[0].signature;
+   blockCheck = 4;
  }
 }
 /* camPos function:
    On start up, wait untill the camera has started pulling data,
    then move towards first fish.
+   pan must be greater than 300.
 */
 void camPos()
 {
@@ -104,7 +114,7 @@ void camPos()
     while(!blocks){
      readPixy();
      pixy.setServos(300,600);
-     
+     Serial.println(blocks);
     }
   
    setCam =1;
@@ -144,34 +154,87 @@ void camPos()
 void drive(int fishcount)
 {
   //Serial.println("working");
-  time = millis();
-  switch(fishcount)
+  
+  
+  switch(fish)
   {
     
     case 1:
-    Serial.println(yLoc);
-      if(yLoc < 165)
-      {
-        
-      digitalWrite(Dir1, LOW);
-      digitalWrite(Dir2, LOW);
-      analogWrite(motorLeft, 80);
-      analogWrite(motorRight, 80);
+    
+     leftEnc = motorLEnc.read();
+     rightEnc = motorREnc.read();
+    
+    if(abs(leftEnc) < 14250)
+   {
+     analogWrite(motorLeft, leftSpeed);
+     analogWrite(motorRight, rightSpeed);
+     
+     leftEnc = motorLEnc.read();
+     rightEnc = motorREnc.read();
+
+     if(abs(rightEnc) < abs(leftEnc))
+     {
+       rightSpeed = constrain(rightSpeed++,75,85);
+     }
+     if(abs(rightEnc) > abs(leftEnc))
+     {
+       rightSpeed = constrain(rightSpeed--,75,85);
+     }
+   }
+ 
+     leftEnc = motorLEnc.read();
+     rightEnc = motorREnc.read();
+     if(abs(rightEnc)> 14250 && abs(rightEnc) < 19190)
+     {
+         if(driveFlag==0){  
+           analogWrite(motorLeft, 0);
+           analogWrite(motorRight, 0);
+           digitalWrite(Dir1, HIGH);
+           driveFlag++;
+         }
        
-      }
-      if(yLoc > 165)
-      {
-        while((millis() - time) < 2000)
-        {
-          readPixy();
+       analogWrite(motorLeft, leftSpeed);
+       analogWrite(motorRight, rightSpeed);
+     
+     leftEnc = motorLEnc.read();
+     rightEnc = motorREnc.read();
+     
+     
+     if(abs(rightEnc) < abs(leftEnc))
+     {
+       rightSpeed = constrain(rightSpeed++,75,85);
+     }
+     if(abs(rightEnc) > abs(leftEnc))
+     {
+       rightSpeed = constrain(rightSpeed--,75,85);
+     }
+     }
+     if(abs(rightEnc)> 19190 && (yLoc < 147 || !blocks)  )
+     {
+       if(driveFlag==1)
+       {
+        digitalWrite(Dir1, LOW);
+        driveFlag++;
         analogWrite(motorLeft, 0);
         analogWrite(motorRight, 0);
-        fish = 2;
-        Serial.println("wait!!!!");
-        
+       }
+      analogWrite(motorLeft, 80);
+      analogWrite(motorRight, 80);
+     }
+     if(yLoc > 100 && abs(rightEnc) > 19190 && blocks)
+     {
+       analogWrite(motorLeft, 0);
+        analogWrite(motorRight, 0);
+        if (xLoc > 221 && blocks)
+        {
+          digitalWrite(Dir2, HIGH);
+          analogWrite(motorLeft, 80);
+          analogWrite(motorRight, 80);
         }
-      }
+        
+     }  
       break;
+     
     case 2:
        if(!blocks && flag1 < 10)
        { 
@@ -223,22 +286,7 @@ void drive(int fishcount)
       analogWrite(motorRight, 0);
     }*/
       break;
-    case 3:
-      digitalWrite(Dir1, HIGH);
-      digitalWrite(Dir2, LOW);
-      analogWrite(motorRight,80);
-      analogWrite(motorLeft, 80);
-      break;
-    case 4:
-      digitalWrite(Dir1, LOW);
-      digitalWrite(Dir2, HIGH);
-      analogWrite(motorRight, 83);
-      analogWrite(motorLeft, 80);
-      break;
-    case 5:
-      analogWrite(motorLeft, 0);
-      analogWrite(motorRight, 0);
-      break;
+    
   }
 }
 

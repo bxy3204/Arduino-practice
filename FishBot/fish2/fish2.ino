@@ -49,7 +49,7 @@ void loop() {
    drive(neutral);
    delay(500);
    drive(left);
-   delay(3200);
+   delay(2800);
    drive(neutral);
    delay(1000);
    drive(forward);

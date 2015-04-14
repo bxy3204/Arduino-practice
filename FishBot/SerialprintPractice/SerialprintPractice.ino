@@ -22,7 +22,10 @@
 
 #include <SPI.h>  
 #include <Pixy.h>
-
+int xLoc;
+int yLoc;
+int width;
+int ht;
 Pixy pixy;
 
 void setup()
@@ -40,8 +43,16 @@ void loop()
   int j;
   uint16_t blocks;
   char buf[32]; 
+  xLoc = pixy.blocks[0].x;
+  yLoc = pixy.blocks[0].y;
+  width = pixy.blocks[0].width;
+  ht = pixy.blocks[0].height;
   
-  
+ /*if((width+ht) < 210)
+ {
+   Serial.println("forward");
+ }*/
+ if(!blocks)
   blocks = pixy.getBlocks();
   
   if (blocks)
@@ -50,7 +61,6 @@ void loop()
     
     if (i%50==0)
     {
-      pixy.setServos(500,500);
       sprintf(buf, "Detected %d:\n", blocks);
       Serial.print(buf);
       for (j=0; j<blocks; j++)

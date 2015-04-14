@@ -10,14 +10,19 @@ int height;
 int width;
 int color;
 uint16_t blocks;
+int blockCheck;
 void setup() {
   // put your setup code here, to run once:
 pixy.init();
+Serial.begin(9600);
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  
+  readpixy();
+  Serial.println(blocks);
 
 }
 void readpixy()
@@ -26,11 +31,20 @@ void readpixy()
  blocks = pixy.getBlocks();
  if(!blocks)
  {
-   delay(20);
-   blocks = pixy.getBlocks();
+   for (int i=0; i <5; i++)
+   {
+     delay(20);
+     blocks = pixy.getBlocks();
+     if(blocks)
+     {
+       i=5;
+     }
+   }
  }
+
  if(!blocks){
-   color = 0;
+   blockCheck--;
+   blockCheck = constrain(blockCheck,0,4);
  }
  if (blocks)
  {
@@ -39,6 +53,7 @@ void readpixy()
    width = pixy.blocks[0].width;
    height = pixy.blocks[0].height;
    color = pixy.blocks[0].signature;
+   blockCheck = 4;
  }
 }
  

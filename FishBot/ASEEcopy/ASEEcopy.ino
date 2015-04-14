@@ -3,7 +3,7 @@
 #include <Pixy.h>
 #include <Encoder.h>
 Pixy pixy;
-int blockCheck =0;
+
 int time; //Track time as needed
 // Place holders for parameters of objects found
 int xLoc;
@@ -23,11 +23,7 @@ uint16_t blocks; //holds number of objects found
 int setCam=0; // check if camera is set to initial position
 int fish = 1;  //number of fish caught
 //Values for motor control
-const int forward = 1;
-const int backward = 2;
-const int left =3;
-const int right = 4;
-const int neutral = 5;
+
 
 //motor one
 int Dir1 = 26; //motor direction. low = forward
@@ -52,7 +48,7 @@ void setup() {
 void loop() {
   readPixy();
   
-  //camPos();
+  camPos();
   
   drive(fish);
 }
@@ -60,36 +56,29 @@ void loop() {
   Check camera for objects, if nothing found
   wait 20ms and check again to verify no objects are in sight.
   If objects are found, copy the parameters of object.
-  Check 4 frames to verify what camera sees
 */
-void readPixy()
-//uint16_t blocks;
-{
+void readPixy(){
+
+
+  
  blocks = pixy.getBlocks();
+
  if(!blocks)
  {
-   for (int i=0; i <5; i++)
-   {
-     delay(20);
-     blocks = pixy.getBlocks();
-     if(blocks)
-     {
-       i=5;
-     }
-   }
+   delay(20);
+   blocks = pixy.getBlocks();
+   
  }
-
- if(!blocks){
-   blockCheck--;
-   blockCheck = constrain(blockCheck,0,4);
- }
+ 
  if (blocks)
  {
+  
    xLoc = pixy.blocks[0].x;
    yLoc = pixy.blocks[0].y;
    width = pixy.blocks[0].width;
    height = pixy.blocks[0].height;
    color = pixy.blocks[0].signature;
+   
  }
 }
 /* camPos function:
@@ -123,14 +112,15 @@ void camPos()
         
       }
       //Serial.println(camFlag);
-      if (camFlag ==1)
+      /*if (camFlag ==1)
       {
         time = millis();
-        //Serial.println("fuck ya");
+        
         readPixy();
         pixy.setServos(300,600);
         readPixy();
-      }
+        camFlag=2;
+      }*/
       break;
   }
         
@@ -159,7 +149,7 @@ void drive(int fishcount)
       analogWrite(motorRight, 80);
        
       }
-      if(yLoc > 165)
+      if(yLoc > 165) //mimics pick up.
       {
         while((millis() - time) < 2000)
         {
@@ -186,12 +176,8 @@ void drive(int fishcount)
         analogWrite(motorRight, 0);
         Serial.println("stop!!");
         flag1++;
-        if (flag1 >= 10)
-        {
-          camFlag =1;
-        }
        }
-      /* if(camFlag == 2 && !blocks)
+       if(camFlag == 2 && !blocks)
        {
          digitalWrite(Dir1, HIGH);
          digitalWrite(Dir2, LOW);
@@ -210,7 +196,7 @@ void drive(int fishcount)
        }
          
      
-     /*if(!blocks)
+     if(!blocks)
     { 
       digitalWrite(Dir1, LOW);
       digitalWrite(Dir2, LOW);
@@ -221,23 +207,7 @@ void drive(int fishcount)
     {
       analogWrite(motorLeft, 0);
       analogWrite(motorRight, 0);
-    }*/
-      break;
-    case 3:
-      digitalWrite(Dir1, HIGH);
-      digitalWrite(Dir2, LOW);
-      analogWrite(motorRight,80);
-      analogWrite(motorLeft, 80);
-      break;
-    case 4:
-      digitalWrite(Dir1, LOW);
-      digitalWrite(Dir2, HIGH);
-      analogWrite(motorRight, 83);
-      analogWrite(motorLeft, 80);
-      break;
-    case 5:
-      analogWrite(motorLeft, 0);
-      analogWrite(motorRight, 0);
+    }
       break;
   }
 }

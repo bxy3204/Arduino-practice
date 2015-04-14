@@ -21,9 +21,16 @@ const int neutral = 5;
 void setup() {
   // put your setup code here, to run once:
 pixy.init();
+      pinMode(Dir1, OUTPUT);
+  pinMode(Dir2, OUTPUT);
+  pinMode(motorLeft, OUTPUT);
+  pinMode(motorRight, OUTPUT);
+  digitalWrite(Dir1, HIGH);
+  digitalWrite(Dir2, LOW);
 }
 
 void loop() {
+  drive(left);
   
 }
 
