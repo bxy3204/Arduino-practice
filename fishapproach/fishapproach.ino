@@ -96,6 +96,7 @@ void loop() {
     else{
       neutral();
     }
+  }
   /*if (x<100)
   {
     turnleft();
@@ -109,8 +110,8 @@ void loop() {
     else
     {
       neutral();
-    }*
-  }
+    }
+  }**/
 }
 
   

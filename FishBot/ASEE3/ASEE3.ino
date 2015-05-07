@@ -21,7 +21,7 @@ long rightEnc;
 int camFlag = 0;
 int flag1 =0;
 int leftSpeed = 90;
-int rightSpeed = 90;
+int rightSpeed = 88;
 
 uint16_t blocks; //holds number of objects found
 int setCam=0; // check if camera is set to initial position
@@ -62,7 +62,7 @@ void loop() {
   camPos();
   drive();
   area= height + width;
-  Serial.println(yLoc);
+  Serial.println(blocks);
   /*if ( (xLoc < 180) || blockCheck <= 0)
   {
     turn();
@@ -169,7 +169,7 @@ void camPos()
    pixy.setServos(300,700);
    setCam =1;
   }
-  switch(fish)
+  /*switch(fish)
   {
     case 2:
       
@@ -192,7 +192,7 @@ void camPos()
         readPixy();
       }
       break;
-  }
+  }*/
         
     
   
@@ -210,7 +210,7 @@ void drive()
   switch(fish)
   {
     case 0:
-    if (yLoc < 110 && yLoc != 0 && driveFlag==0)
+    if (yLoc < 90 && yLoc != 0 && driveFlag==0)
     {
       fwd();
       Serial.println("forward");
@@ -218,7 +218,7 @@ void drive()
       fish = constrain(fish, 0,1);
       time = millis();
     }
-    if (yLoc >= 110)
+    if (yLoc >= 90)
     {
       //driveFlag++;
       neutral();
@@ -230,35 +230,51 @@ void drive()
       }
       fish = constrain(fish,0,1);
       motorLEnc.write(0);
- 
     }
     break;
     case 1:
        leftEnc = motorLEnc.read();
-      if(abs(leftEnc)  < 4150 && !driveFlag)
-      {
-        turn();
-      }
-      if(abs(leftEnc) > 4150 && !driveFlag)
-      {
-        driveFlag=1;
-        motorLEnc.write(0);
-      }
-      if(abs(leftEnc) < 8750 && driveFlag ==1 )
+       rightEnc = motorREnc.read();
+      if(abs(leftEnc)  < 12850 && !driveFlag)
       {
         fwd();
+        time=millis();
       }
       
-     if(abs(leftEnc) > 8720 && driveFlag==1 )
+     if(abs(leftEnc) > 12850)
       {
         
         neutral();
+        driveFlag=1;
+       if (millis() - time > 3000)
+       {
+       // fish++;
         driveFlag=2;
-        
         motorLEnc.write(0);
         leftEnc = motorLEnc.read();
+       } 
+        
       }
-      if(driveFlag==2 && abs(leftEnc) < 4250)
+      
+     if(abs(leftEnc) < 4250 && driveFlag == 2)
+     {
+       turn();
+       time = millis();
+     }
+     if(abs(leftEnc) > 4250 && driveFlag >1)
+     {
+      neutral();
+      driveFlag++;
+       if (millis() - time > 3000)
+       {
+        //fish++;
+        driveFlag=3;
+        motorLEnc.write(0);
+        leftEnc = motorLEnc.read();
+       } 
+       
+     }
+     /* if(driveFlag==2 && abs(leftEnc) < 4250)
       {
         turnRight();
         time=millis();
@@ -272,19 +288,31 @@ void drive()
         driveFlag=0;
         motorLEnc.write(0);
        }
-      }
+      }*/
 
       break;
     case 2:
-     /*leftEnc=motorLEnc.read();
-     if(leftEnc < 2000)
-     {
-       fwd();
-     }
-     if(leftEnc > 2000)
-     {
-       neutral();
-     }*/
+   /*  if (yLoc < 90 && driveFlag==0)
+    {
+      fwd();
+      Serial.println("forward");
+      fish--;
+      fish = constrain(fish, 0,1);
+      time = millis();
+    }
+    if (yLoc >= 90)
+    {
+      //driveFlag++;
+      neutral();
+      Serial.println("stop");
+      if (millis() - time > 3000)
+      {
+      fish++;
+      driveFlag=0;
+      }
+      fish = constrain(fish,0,1);
+      motorLEnc.write(0);
+    }*/
     break;
   }
   

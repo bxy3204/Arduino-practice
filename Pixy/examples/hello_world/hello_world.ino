@@ -52,7 +52,7 @@ void loop()
     {
       pixy.setServos(500,500);
       sprintf(buf, "Detected %d:\n", blocks);
-      Serial.print(buf);
+      Serial.print(blocks);
       for (j=0; j<blocks; j++)
       //pixy.setServos(300,600);
       {

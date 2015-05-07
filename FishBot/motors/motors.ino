@@ -25,7 +25,7 @@ void setup() {
 }
 
 void loop() {
-uint16_t blocks;
+/*uint16_t blocks;
 blocks = pixy.getBlocks();
  if (blocks)
  {
@@ -40,16 +40,10 @@ blocks = pixy.getBlocks();
       color = pixy.blocks[0].signature;
       
       area = height+width;
- }
- if (area < 500)
- {
-    analogWrite(motorLeft, 80);
-  analogWrite(motorRight, 80);
- }
- if (area > 500)
- {
-    analogWrite(motorLeft, 0);
-  analogWrite(motorRight, 0);
- }
+ }*/
+
+  analogWrite(motorLeft, 80);
+  analogWrite(motorRight, 125);
+ 
 
 }
