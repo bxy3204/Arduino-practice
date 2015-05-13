@@ -1,6 +1,4 @@
-#include <Stepper.h>
-#define STEPS 32
-Stepper arm = Stepper(STEPS,41,45,43,47);//Positive towards bucket
+
 int x = 0;
 // Pixy and SPI libraries for communicating with camera
 #include <SPI.h>
@@ -24,8 +22,17 @@ long leftEnc;
 long rightEnc;
 int camFlag = 0;
 int flag1 = 0;
-int leftSpeed = 80;
-int rightSpeed = 80;
+int leftSpeed = 70;
+int rightSpeed = 70;
+int grabFlag=0;
+#include <Servo.h>
+ int grabPos=0;
+ int dropFlag =0;
+Servo myservo;  // create servo object to control a servo
+                // a maximum of eight servo objects can be created
+ 
+
+ 
 
 
 uint16_t blocks; //holds number of objects found
@@ -37,13 +44,13 @@ const int backward = 2;
 const int left = 3;
 const int right = 4;
 //const int neutral = 5;
-
+int arm;
 //motor one
 int Dir1 = 36; //motor direction. low = forward
-int motorLeft = 5; //motor speed. pwm 60-254
+int motorLeft = 6; //motor speed. pwm 60-254
 // motor two
 int Dir2 = 37;
-int motorRight = 6;
+int motorRight = 5;
 int driveFlag = 0;
 int motorDir = 0;
 int i;
@@ -59,24 +66,62 @@ void setup() {
   digitalWrite(Dir2, LOW);
   Serial.begin(9600);
   Serial.println("start");
-  arm.setSpeed(300);
+  
+  myservo.attach(9);
+  myservo.write(140);
+  pinMode(24, OUTPUT);     
+
+  pinMode(25, OUTPUT);
+
+  digitalWrite(24, LOW);
+
+  digitalWrite(25, LOW); //Low towards bucket
+  int arm=0;
+  delay(3000);
 }
 
 void loop() {
  readPixy();
- if(fish == 0){
- camAppr();
+
+if(dropFlag == 0)
+{
+  
+  
+  liftDown();
+}
+if(driveFlag < 1 && dropFlag > 0){
+ fwd(2100);
+ 
  }
- if(fish > 0 && driveFlag < 1)
+ 
+
+ if(driveFlag==1 && fish ==0)
  {
-   Serial.println("fwd");
-   fwd(2800);
+   //Serial.println("grab");
+   grab(90);
+   arm=0;
+   time = millis();
  }
- if(driveFlag == 1)
+ if(grabFlag ==1 && arm !=1350 && ( millis()-time) > 500)
  {
-   turn(3800);
+   liftUp();
+   fish++;
  }
- Serial.println(driveFlag);
+ if(grabFlag==1 && arm == 1350 && driveFlag <2)
+ {
+   grab(135);
+   
+ }
+ if(grabFlag ==2 && driveFlag <2)
+ {
+   fwd(7500);
+ }
+ 
+/* if(driveFlag == 1)
+ {
+   turn(2500);
+ }*/
+ 
 }
 
 void fwd(long distance)
@@ -102,7 +147,18 @@ void fwd(long distance)
     driveFlag++;
     x = 0;
   }
+ /* forward();
+  if (xLoc > 150)
+  {
+    leftSpeed=0;
+  }
+  if(xLoc < 160)
+  {
+    leftSpeed=80;
+  }*/
+ 
 }
+
 void neutral()
 {
   analogWrite(motorLeft, 0);
@@ -209,10 +265,10 @@ void readPixy()
 void camAppr()
 {
   area = width + height;
- if(area < 200 && area > 0){
+ if(area < 180 && area > 0){
    forward();
  }
- if(area > 200)
+ if(area > 180)
  {
    time = millis();
    neutral();
@@ -223,8 +279,42 @@ void forward()
 {
   digitalWrite(Dir1, HIGH);
     digitalWrite(Dir2, HIGH);
-    analogWrite(motorLeft, 70);
-    analogWrite(motorRight, 70);
+    analogWrite(motorLeft, leftSpeed);
+    analogWrite(motorRight, rightSpeed);
 }
-  
+void grab(int pos)
+{
+  myservo.write(pos);
+  grabFlag++;
+}
+void liftUp()
+{
+  digitalWrite(25, LOW);
+  if(arm < 1350){
+  digitalWrite(24, HIGH);
+  delayMicroseconds(1000);    
 
+  digitalWrite(24, LOW); 
+  delayMicroseconds(1000); 
+  }
+ arm++; 
+}  
+void liftDown()
+{
+  digitalWrite(25, HIGH);
+  if(arm < 1350){
+  digitalWrite(24, HIGH);
+  delayMicroseconds(1000);    
+
+  digitalWrite(24, LOW); 
+  delayMicroseconds(1000); 
+  }
+  arm++; 
+  if(arm == 1350)
+  {
+    dropFlag++;
+  }
+
+ 
+}  
+  

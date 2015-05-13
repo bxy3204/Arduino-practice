@@ -1,3 +1,4 @@
+int arm=0;
 void setup() {                
 
   pinMode(24, OUTPUT);     
@@ -6,17 +7,19 @@ void setup() {
 
   digitalWrite(24, LOW);
 
-  digitalWrite(25, HIGH);
+  digitalWrite(25, LOW); //Low towards bucket
 
 }
 
 
 void loop() {
-
+if(arm < 1400){
   digitalWrite(24, HIGH);
   delayMicroseconds(1000);    
 
   digitalWrite(24, LOW); 
-  delayMicroseconds(1000);    
+  delayMicroseconds(1000); 
+ arm++; 
+}  
 
 }
