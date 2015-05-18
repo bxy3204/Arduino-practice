@@ -1,12 +1,16 @@
 #include <Encoder.h>
 // motor one
-int Dir1 = 26;
-int motorLeft = 5;
-int Dir2 = 27;
-int motorRight = 6;
+int Dir1 = 36;
+int motorLeft = 6;
+int Dir2 = 37;
+int motorRight = 5;
 long track=0;
-
-Encoder myEnc(2,3);
+Encoder motorLEnc(18, 19);
+Encoder motorREnc(20, 21);
+int lSpeed=80;
+int rSpeed = 80;
+long track2 =0;
+long error;
 void setup() {
   // put your setup code here, to run once:
  Serial.begin(9600);
@@ -15,7 +19,7 @@ void setup() {
   pinMode(Dir2, OUTPUT);
   pinMode(motorLeft, OUTPUT);
   pinMode(motorRight, OUTPUT);
-  digitalWrite(Dir1, LOW);
+  digitalWrite(Dir1, HIGH);
   digitalWrite(Dir2, HIGH);
   
 
@@ -23,17 +27,24 @@ void setup() {
 long oldPosition  = -999;
 
 void loop() {
-    analogWrite(motorLeft, 80);
-  analogWrite(motorRight, 80);
-  // put your main code here, to run repeatedly:
-  long newPosition = myEnc.read();
-  newPosition = newPosition * -1;
-  if (newPosition != oldPosition) {
-    oldPosition = newPosition;
-    Serial.println(newPosition);
-    track += newPosition;
-    delay(100);
+    analogWrite(motorLeft, lSpeed);
+  analogWrite(motorRight, rSpeed);
+  track = motorLEnc.read();
+  track2 = motorREnc.read();
+Serial.println(error);
+error = abs(track) - abs(track2);
+error = round(error);
+if(error < 0 )
+{
+  lSpeed=constrain(lSpeed + 10, 60,90 );
+  rSpeed = constrain(rSpeed - 10,60,90);
+}
+if(error > 1)
+{
+  lSpeed=constrain(lSpeed- 10, 60,90 );
+  rSpeed = constrain(rSpeed + 10,60,90);
+
   }
+}
  
 
-}

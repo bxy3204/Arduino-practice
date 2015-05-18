@@ -9,8 +9,12 @@ Pixy pixy;
 int blockCheck = 0;
 int time; //Track time as needed
 // Place holders for parameters of objects found
+int lSpeed=80;
+int rSpeed = 80;
+long track=0;
+long track2 =0;
+long error;
 int xLoc;
-int fucker;
 uint16_t yLoc;
 int height;
 int width;
@@ -22,8 +26,8 @@ long leftEnc;
 long rightEnc;
 int camFlag = 0;
 int flag1 = 0;
-int leftSpeed = 70;
-int rightSpeed = 70;
+int leftSpeed = 80;  //motor speed. pwm 60-254
+int rightSpeed = 80;
 int grabFlag = 0;
 #include <Servo.h>
 int grabPos = 0;
@@ -41,7 +45,7 @@ const int right = 4;
 int arm;
 //motor one
 int Dir1 = 36; //motor direction. low = forward
-int motorLeft = 6; //motor speed. pwm 60-254
+int motorLeft = 6;
 // motor two
 int Dir2 = 37;
 int motorRight = 5;
@@ -71,15 +75,42 @@ void setup() {
 }
 
 void loop() {
+ Serial.println(driveFlag);
+if(!driveFlag) //8000 foward
+{
+  fwd(7600);
+}
+if(driveFlag==1) 
+{
+  turn(2175);
+  delay(100);
+}
+if(driveFlag==2)
+{
+  fwd(700);
+  time = millis();
+}
+if(driveFlag == 3 && (millis() - time) > 3000)
+{
+  driveFlag=0;
+}
+/*if(driveFlag ==1)
+{
+  turn(1800);
+}*/
+
+Serial.println(driveFlag);
+  /*turn(4500);
   readPixy();
+  Serial.println(area);
   if (dropFlag == 0)
   {
     liftDown();
   }
-  if (driveFlag < 1 && dropFlag > 0) {
+ /* if (driveFlag < 1 && dropFlag > 0) {
     camAppr();
-  }
-  /*if(driveFlag==1 && fish ==0)
+  }*/
+  /*if(fish ==0 && !grabFlag && dropFlag>0)
   {
     //Serial.println("grab");
     grab(90);
@@ -96,7 +127,7 @@ void loop() {
     grab(135);
 
   }
-  if(grabFlag ==2 && driveFlag <2)
+  if(grabFlag ==2 && driveFlag <1)
   {
     fwd(7500);
   }
@@ -112,18 +143,36 @@ void fwd(long distance)
 {
   rightEnc = motorREnc.read();
   leftEnc = motorLEnc.read();
+    track = motorLEnc.read();
+  track2 = motorREnc.read();
+  error = abs(track) - abs(track2);
+error = round(error);
+if(error < 0 )
+{
+  lSpeed=constrain(lSpeed + 8, 60,90 );
+  rSpeed = constrain(rSpeed - 10,60,90);
+}
+if(error > 1)
+{
+  lSpeed=constrain(lSpeed- 8, 60,90 );
+  rSpeed = constrain(rSpeed + 10,60,90);
+
+  }
   if (x == 0)
   {
     x = distance;
     motorLEnc.write(0);
+    motorREnc.write(0);
+    lSpeed=80;
+    rSpeed=80;
     leftEnc = motorLEnc.read();
   }
   if (x > abs(leftEnc))
   {
     digitalWrite(Dir1, HIGH);
     digitalWrite(Dir2, HIGH);
-    analogWrite(motorLeft, leftSpeed);
-    analogWrite(motorRight, rightSpeed);
+    analogWrite(motorLeft, lSpeed);
+    analogWrite(motorRight, rSpeed);
   }
   if (x < abs(leftEnc))
   {
@@ -248,14 +297,14 @@ void readPixy()
 void camAppr()
 {
   area = width + height;
-  if (area < 180 && area > 0) {
+  if (area < 200 && area > 0) {
     forward();
   }
-  if (area > 180)
+  if (area > 200)
   {
     time = millis();
     neutral();
-    fish++;
+    driveFlag++;
   }
 }
 void forward()

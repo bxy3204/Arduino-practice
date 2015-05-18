@@ -5,8 +5,9 @@ const int red = 1;
 const int blue =  2;
 const int green = 3;
 const int yellow = 4; 
-Stepper binFloor = Stepper(STEPS,42,46,44,48); //Colored bins
-Stepper bin = Stepper(STEPS,43,47,45,49); //Entire binFloor
+Stepper binFloor = Stepper(STEPS,46,50,48,52); //Colored bins
+Stepper bin = Stepper(STEPS,28,30,29,31); //Entire bin
+//Stepper bin = Stepper(STEPS,28,30,29,31); //Entire binFloor
 int binLoc = 1; // Location of bin(1:red 2:blue 3:green 4:yellow)
 int binMove = 0; // number of steps to move bin
 int drop = 0; //Bucket location for drop off
@@ -25,7 +26,7 @@ void setup() {
 */
 void findBin(int color)
 {
-  binMove = (color - binLoc) * 695;
+  binMove = (color - binLoc) * -695;
   bin.step(binMove);
   binLoc = color;
 }
@@ -37,9 +38,9 @@ void findBin(int color)
  */
 void dropOff()
 {
-  findBin(yellow);
-  bin.step(695);
-  binFloor.step(650);
+ // findBin(-yellow);
+//  bin.step(-695);
+  binFloor.step(-650);//negative to drop
   binLoc = 1;
 }
 void loop() {
@@ -51,5 +52,7 @@ void loop() {
   delay(2000);
   findBin(yellow);
   delay(2000);
+ /* dropOff();
+  delay(10000);*/
   
 }
