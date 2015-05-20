@@ -60,6 +60,7 @@ int driveFlag = 0; //flag to indicate drive condition is met
 int i;
 int area; //height + width from camera
 int binFlag=0; //flag to indicate bin condition is met
+int camAppFlag;
 void setup() {
   pixy.init(); //initialize camera
   pinMode(Dir1, OUTPUT);
@@ -80,6 +81,7 @@ void setup() {
   delay(3000); //give camera and claw time to setup
   bin.setSpeed(500); //set speed of bin stepper
   binFloor.setSpeed(500); //set speed of the floor stepper
+  
 }
 
 void loop() {
@@ -136,6 +138,7 @@ void loop() {
     grabFlag=0;
     fish++;
     binFlag=0;
+    camAppFlag=0;
   }
   //temporary stop
   if(fish==2)
@@ -350,26 +353,31 @@ void readPixy()
 //camAppr(): use the camera to apprach the fish. Stops the robot when a set distance is reached, and turns toward the fish while driving.
 void camAppr()
 {
-  area = width + height;
-  if (area < 120 && area > 0) {
-    if(xLoc > 160)
-    {
-      rightSpeed = 95;
-      leftSpeed= 75;
-    }
-    if(xLoc < 160)
-    {
-      rightSpeed = 75;
-      leftSpeed = 95;
-    }
-    forward();
-  }
-  if (area > 120)
-  {
-    time = millis();
-    neutral();
-    driveFlag++;
-  }
+  
+ if(area < 100 && !camAppFlag && area != 0){
+   forward();
+  // camAppFlag++;
+ }
+ if (area > 100 && !camAppFlag)
+ {
+   camAppFlag++;
+ }
+ if(area > 100 && xLoc >165 && camAppFlag==1 && !driveFlag)
+ {
+  turnRight();
+  Serial.println("right");
+ }
+if((area > 100 && area > 0) && xLoc < 159 && camAppFlag==1&& !driveFlag)
+ {
+  turnLeft();
+  Serial.println("left");
+ }
+if (area > 100 && (xLoc >165 && xLoc < 170)&&!driveFlag)
+ {
+ time = millis();
+ neutral();
+ driveFlag++;
+ }
 }
 //drive forward indefinately
 void forward()
@@ -438,4 +446,17 @@ void dropOff()
   binFloor.step(650);//negative to drop
   binLoc = 1;
 }
-
+void turnLeft()
+{
+      digitalWrite(Dir1, LOW);
+    digitalWrite(Dir2, HIGH);
+    analogWrite(motorLeft, 0);
+    analogWrite(motorRight, rightSpeed);
+}
+void turnRight()
+{
+      digitalWrite(Dir1, HIGH);
+    digitalWrite(Dir2, LOW);
+    analogWrite(motorLeft, leftSpeed);
+    analogWrite(motorRight, 0);
+}

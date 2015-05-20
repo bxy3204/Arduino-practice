@@ -14,6 +14,7 @@ int time; //Track time as needed
 int xLoc;
 int fucker;
 uint16_t yLoc;
+int camAppFlag;
 int height;
 int width;
 int color;
@@ -32,17 +33,17 @@ uint16_t blocks; //holds number of objects found
 int setCam = 0; // check if camera is set to initial position
 int fish = 0;  //number of fish caught
 //Values for motor control
-const int forward = 1;
+//const int forward = 1;
 const int backward = 2;
 const int left = 3;
 const int right = 4;
 //const int neutral = 5;
 
 //motor one
-int Dir1 = 26; //motor direction. low = forward
+int Dir1 = 36; //motor direction. low = forward
 int motorLeft = 5; //motor speed. pwm 60-254
 // motor two
-int Dir2 = 27;
+int Dir2 = 37;
 int motorRight = 6;
 int driveFlag = 0;
 int motorDir = 0;
@@ -60,12 +61,25 @@ void setup() {
   Serial.begin(9600);
   Serial.println("start");
   arm.setSpeed(300);
+  delay(3100);
+  
 }
 
 void loop() {
  readPixy();
- 
+ camAppr();
+ //turnLeft();
+// fwd(10000);
+//turnRight();
+ //Serial.println(camAppFlag);
+ //Serial.println("xLoc");
  Serial.println(area);
+ if(driveFlag==1)
+ {
+   //fwd(5000);
+ }
+ //forward();
+ 
 
 }
 
@@ -191,22 +205,60 @@ void readPixy()
       height = pixy.blocks[0].height;
 
       color = pixy.blocks[0].signature;
+      
+      area = height+width;
 
       pixyReadTimer = millis() + 25;  // Max time to hold an old value is 25 ms.
 
    }
+}
+void turnLeft()
+{
+      digitalWrite(Dir1, LOW);
+    digitalWrite(Dir2, HIGH);
+    analogWrite(motorLeft, 0);
+    analogWrite(motorRight, rightSpeed);
+}
+void turnRight()
+{
+      digitalWrite(Dir1, HIGH);
+    digitalWrite(Dir2, LOW);
+    analogWrite(motorLeft, leftSpeed);
+    analogWrite(motorRight, 0);
+}
 void camAppr()
 {
-  area = width + height;
- if(area < 200){
-   fwd(10);
+  
+ if(area < 100 && !camAppFlag && area != 0){
+   forward();
+  // camAppFlag++;
  }
- if(area>200)
+ if (area > 100 && !camAppFlag)
  {
-   neutral();
+   camAppFlag++;
  }
+ if(area > 100 && xLoc >165 && camAppFlag==1 && !driveFlag)
+{
+  turnRight();
+  Serial.println("right");
+}
+if((area > 100 && area > 0) && xLoc < 159 && camAppFlag==1&& !driveFlag)
+{
+  turnLeft();
+  Serial.println("left");
+}
+if (area > 100 && (xLoc >165 && xLoc < 170)&&!driveFlag)
+{
+ time = millis();
+ neutral();
+ driveFlag++;
+}
+}
+void forward()
+{
+  digitalWrite(Dir1, HIGH);
+  digitalWrite(Dir2, HIGH);
+  analogWrite(motorLeft, leftSpeed);
+  analogWrite(motorRight, rightSpeed);
 }
 
- 
-
-}

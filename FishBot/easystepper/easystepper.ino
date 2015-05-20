@@ -7,7 +7,7 @@ void setup() {
 
   digitalWrite(24, LOW);
 
-  digitalWrite(25, LOW); //Low towards bucket
+  digitalWrite(25, HIGH); //Low towards bucket
 
 }
 
