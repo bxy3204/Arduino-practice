@@ -1,3 +1,5 @@
+#include <Adafruit_L3GD20_U.h>
+//#include <Adafruit_9DOF.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_LSM303_U.h>
@@ -65,17 +67,6 @@ void setup(void)
   /* Initialise the sensors */
   initSensors();
     // this function will run the motors in both directions at a fixed speed
-  // turn on motor A
-  digitalWrite(in2, HIGH);
-  digitalWrite(in1, LOW);
-    // turn on motor B
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-    // set speed to 200 out of possible range 0~255
-  analogWrite(enA, motorA);
-
-  // set speed to 200 out of possible range 0~255
-  analogWrite(enB, motorB);
 }
 
 
@@ -139,3 +130,4 @@ void loop(void)
 }
   
   
+

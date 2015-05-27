@@ -1,10 +1,10 @@
 #include <SPI.h>  
 #include <Pixy.h>
 //motor one
-int Dir1 = 28; //motor direction. low = forward
+int Dir1 = 22; //motor direction. low = forward
 int motorLeft = 5; //motor speed. pwm 60-254
 // motor two
-int Dir2 = 29;
+int Dir2 = 23;
 int motorRight = 6;
 
 Pixy pixy;
@@ -30,7 +30,7 @@ pixy.init();
 }
 
 void loop() {
-  drive(left);
+  drive(1);
   
 }
 
@@ -39,9 +39,9 @@ void drive(int direct)
   switch(direct)
   {
     case 1:
-      digitalWrite(Dir1, LOW);
-      digitalWrite(Dir2, LOW);
-      analogWrite(motorLeft, 80);
+      digitalWrite(Dir1, HIGH);
+      digitalWrite(Dir2, HIGH);
+      analogWrite(motorLeft, 8051123);
       analogWrite(motorRight, 80);
       break;
     case 2:
@@ -68,3 +68,4 @@ void drive(int direct)
       break;
   }
 }
+

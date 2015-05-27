@@ -1,12 +1,8 @@
 #include <Stepper.h>
 #define STEPS 32 //32 step stepper
-//Bin locations based on color
-const int red = 1;
-const int blue =  2;
-const int green = 3;
-const int yellow = 4; 
-Stepper binFloor = Stepper(STEPS,46,50,48,52); //Colored bins
-Stepper bin = Stepper(STEPS,28,30,29,31); //Entire bin
+
+Stepper binFloor = Stepper(STEPS,29,33,31,35); //Colored bins
+Stepper bin = Stepper(STEPS,28,32,30,34); //Entire bin
 //Stepper bin = Stepper(STEPS,28,30,29,31); //Entire binFloor
 int binLoc = 1; // Location of bin(1:red 2:blue 3:green 4:yellow)
 int binMove = 0; // number of steps to move bin
@@ -51,10 +47,10 @@ int fish = 0;  //number of fish caught
 
 int arm; //steps for arm stepper
 //motor one
-int Dir1 = 36; //left motor direction. low = forward
+int Dir1 = ; //left motor direction. low = forward
 int motorLeft = 6; //left motor drive pin. 
 // motor two
-int Dir2 = 37; //right motor direction low = forward
+int Dir2 = 23; //right motor direction low = forward
 int motorRight = 5; // right motor drive pin. 
 int driveFlag = 0; //flag to indicate drive condition is met
 int i;
@@ -87,7 +83,7 @@ void setup() {
 void loop() {
  //Use flags to change states.
   readPixy();
-  //Serial.println(area);
+ 
  //Approach the fish to a set distance and line up to grab. 
   if (!driveFlag)
   {
@@ -314,17 +310,17 @@ void readPixy()
 
     if (pixyReadTimer < millis())   // and if we are beyond holding the last valid reading
 
-    { // then there really is nothing being seen
+    { //then there really is nothing being seen
 
-      //xLoc = 0;
+      xLoc = 0;
 
-      // yLoc = 0;
+       yLoc = 0;
 
-      //width = 0;
+      width = 0;
 
-      //height = 0;
+      height = 0;
 
-      //color = 0;
+      color = 0;
 
     }
 
